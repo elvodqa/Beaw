@@ -17,8 +17,6 @@ namespace Engine
             Rectangle.x = 0;
             Rectangle.y = 0;
             SDL.SDL_QueryTexture(TextureHandle, out _format, out _access, out Rectangle.w, out Rectangle.h);
-            Rectangle.w = 100;
-            Rectangle.h = 100;
         }
 
         public void Update(Clock clock)

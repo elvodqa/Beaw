@@ -7,8 +7,8 @@ public class Program
     {
         InstanceSettings instanceSettings = new InstanceSettings()
         {
-            Size = new(100, 10),
-            Title = "Hello"
+            Size = new(1000, 700),
+            Title = "Heaw"
         };
 
         using (Instance instance = new(instanceSettings))

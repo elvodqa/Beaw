@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Numerics;
+using Engine.Windows;
 using SDL2;
 
 namespace Engine
@@ -90,8 +91,8 @@ namespace Engine
 
             Internal.WindowHandle = SDL.SDL_CreateWindow(
                 _instanceSettings.Title,
-                100,
-                100,
+                SDL.SDL_WINDOWPOS_CENTERED,
+                SDL.SDL_WINDOWPOS_CENTERED,
                 (int)_instanceSettings.Size.X,
                 (int)_instanceSettings.Size.Y,
                 SDL.SDL_WindowFlags.SDL_WINDOW_ALLOW_HIGHDPI | SDL.SDL_WindowFlags.SDL_WINDOW_RESIZABLE
@@ -113,12 +114,17 @@ namespace Engine
 
             _clock = new();
             _dummyTexture = new("Resources/emir.png");
+            _dummyTexture.Rectangle.w /= 5;
+            _dummyTexture.Rectangle.h /= 5;
         }
         
         private void Update()
         {
             _clock.Update();
-            //Console.WriteLine(_clock.Delta);
+            foreach (var window in Internal.Windows)
+            {
+                window.Update(_clock);
+            }
         }
 
         private void HandleEvents()
@@ -126,6 +132,24 @@ namespace Engine
             SDL.SDL_Event e;
             while (SDL.SDL_PollEvent(out e) == 1)
             {
+                // handle multiple windows
+                if (e.type == SDL.SDL_EventType.SDL_WINDOWEVENT
+                    && e.window.windowEvent == SDL.SDL_WindowEventID.SDL_WINDOWEVENT_CLOSE)
+                {
+                    // ... Handle window close for each window ...
+                    // Note, you can also check e.window.windowID to check which
+                    // of your windows the event came from.
+                    // e.g.:
+                    foreach (var window in Internal.Windows)
+                    {
+                        if (SDL.SDL_GetWindowID(window.Handle) == e.window.windowID)
+                        {
+                            SDL.SDL_DestroyWindow(window.Handle);
+                        }
+                    }
+                    
+                }
+                
                 switch (e.type)
                 {
                     case SDL.SDL_EventType.SDL_QUIT:
@@ -164,6 +188,7 @@ namespace Engine
                             if (modstates.HasFlag(SDL.SDL_Keymod.KMOD_LSHIFT))
                             {
                                 Console.WriteLine("Shift + A");
+                                Internal.Windows.Add(new ErrorWindow("Error", new(200, 100)));
                             }
                             else
                             {
@@ -192,11 +217,18 @@ namespace Engine
 
         private void Render()
         {
+            SDL.SDL_SetRenderDrawColor(Internal.RendererHandle, 88, 85, 83, 255);
             SDL.SDL_RenderClear(Internal.RendererHandle);
 
             // DRAW
             _dummyTexture.Render();
 
+            foreach (var window in Internal.Windows)
+            {
+                window.Render();
+            }
+            
+            
             SDL.SDL_RenderPresent(Internal.RendererHandle);
         }
 
