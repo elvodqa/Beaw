@@ -11,9 +11,13 @@ namespace Engine
         private int _access;
 
 
-        public Texture(string path)
+        public Texture(string path, IntPtr renderer)
         {
-            TextureHandle = SDL_image.IMG_LoadTexture(Internal.RendererHandle, path);
+            TextureHandle = SDL_image.IMG_LoadTexture(renderer, path);
+            if (TextureHandle == IntPtr.Zero)
+            {
+                Console.WriteLine($"There was an issue creating a texture: {SDL.SDL_GetError()}");
+            }
             Rectangle.x = 0;
             Rectangle.y = 0;
             SDL.SDL_QueryTexture(TextureHandle, out _format, out _access, out Rectangle.w, out Rectangle.h);

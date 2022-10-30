@@ -113,7 +113,7 @@ namespace Engine
             }
 
             _clock = new();
-            _dummyTexture = new("Resources/emir.png");
+            _dummyTexture = new("Resources/emir.png", Internal.RendererHandle);
             _dummyTexture.Rectangle.w /= 5;
             _dummyTexture.Rectangle.h /= 5;
         }
