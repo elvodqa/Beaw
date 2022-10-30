@@ -28,9 +28,9 @@ namespace Engine
             
         }
 
-        public void Render()
+        public void Render(IntPtr renderer)
         {
-            SDL.SDL_RenderCopy(Internal.RendererHandle, TextureHandle, IntPtr.Zero, ref Rectangle);
+            SDL.SDL_RenderCopy(renderer, TextureHandle, IntPtr.Zero, ref Rectangle);
         }
 
         public void Dispose()

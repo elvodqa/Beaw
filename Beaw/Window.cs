@@ -9,7 +9,21 @@ public class Window
     public Vector2 Size;
     public string Title;
     public IntPtr Renderer;
-    
+
+    public SDL.SDL_bool Resizable
+    {
+        get
+        {
+            return _resizable;
+        }
+        set
+        {
+            _resizable = value;
+            SDL.SDL_SetWindowResizable(Handle, _resizable);
+        }
+    }
+
+    private SDL.SDL_bool _resizable = SDL.SDL_bool.SDL_TRUE;
     private int _x;
     private int _y;
 

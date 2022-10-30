@@ -7,6 +7,7 @@ public class ErrorWindow : Window
 {
     public ErrorWindow(string title, Vector2 size) : base(title, size)
     {
+        Resizable = SDL.SDL_bool.SDL_TRUE;
     }
 
     public override void Update(Clock clock)

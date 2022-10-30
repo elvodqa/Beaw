@@ -3,7 +3,7 @@ namespace Engine
 {
     public interface IRenderable : IDisposable
     {
-        public void Render();
+        public void Render(IntPtr renderer);
     }
 }
 

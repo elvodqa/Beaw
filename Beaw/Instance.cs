@@ -57,6 +57,7 @@ namespace Engine
         private double _currentTime = SDL.SDL_GetTicks();
         private Clock _clock;
         private Texture _dummyTexture;
+        private Text _text;
 
         public Instance(InstanceSettings instanceSettings)
         {
@@ -65,6 +66,7 @@ namespace Engine
 
         public void Run()
         {
+            SDL_ttf.TTF_Init();
             _running = true;
             Load();
             while (_running)
@@ -113,9 +115,10 @@ namespace Engine
             }
 
             _clock = new();
-            _dummyTexture = new("Resources/emir.png", Internal.RendererHandle);
-            _dummyTexture.Rectangle.w /= 5;
-            _dummyTexture.Rectangle.h /= 5;
+            _dummyTexture = new("Resources/madeline.png", Internal.RendererHandle);
+            _text = new Text(Internal.RendererHandle, "Boom");
+            //_dummyTexture.Rectangle.w /= 5;
+            //_dummyTexture.Rectangle.h /= 5;
         }
         
         private void Update()
@@ -136,18 +139,31 @@ namespace Engine
                 if (e.type == SDL.SDL_EventType.SDL_WINDOWEVENT
                     && e.window.windowEvent == SDL.SDL_WindowEventID.SDL_WINDOWEVENT_CLOSE)
                 {
-                    // ... Handle window close for each window ...
-                    // Note, you can also check e.window.windowID to check which
-                    // of your windows the event came from.
-                    // e.g.:
+                    for (int i = 0; i < Internal.Windows.Count;)
+                    {
+                        if (SDL.SDL_GetWindowID(Internal.Windows[i].Handle) == e.window.windowID)
+                        {
+                            SDL.SDL_DestroyWindow(Internal.Windows[i].Handle);
+                            Internal.Windows.Remove(Internal.Windows[i]);
+                        }
+                        else
+                        {
+                            i++;
+                        }
+                    }
+                }
+                // DEPRECTAED
+                if (e.type == SDL.SDL_EventType.SDL_WINDOWEVENT
+                    && e.window.windowEvent == SDL.SDL_WindowEventID.SDL_WINDOWEVENT_CLOSE)
+                {
                     foreach (var window in Internal.Windows)
                     {
                         if (SDL.SDL_GetWindowID(window.Handle) == e.window.windowID)
                         {
                             SDL.SDL_DestroyWindow(window.Handle);
+                            Internal.Windows.Remove(window);
                         }
                     }
-                    
                 }
                 
                 switch (e.type)
@@ -221,8 +237,8 @@ namespace Engine
             SDL.SDL_RenderClear(Internal.RendererHandle);
 
             // DRAW
-            _dummyTexture.Render();
-
+            _dummyTexture.Render(Internal.RendererHandle);
+            _text.Render(Internal.RendererHandle);
             foreach (var window in Internal.Windows)
             {
                 window.Render();
