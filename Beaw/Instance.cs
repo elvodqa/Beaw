@@ -57,7 +57,7 @@ namespace Engine
         private double _currentTime = SDL.SDL_GetTicks();
         private Clock _clock;
         private Texture _dummyTexture;
-        private Text _text;
+        private TextRenderer _textRenderer;
 
         public Instance(InstanceSettings instanceSettings)
         {
@@ -116,9 +116,9 @@ namespace Engine
 
             _clock = new();
             _dummyTexture = new("Resources/madeline.png", Internal.RendererHandle);
-            _text = new Text(Internal.RendererHandle, "Boom");
             //_dummyTexture.Rectangle.w /= 5;
             //_dummyTexture.Rectangle.h /= 5;
+            _textRenderer = new(Internal.RendererHandle, "Resources/Fonts/arial.ttf", 26);
         }
         
         private void Update()
@@ -237,8 +237,8 @@ namespace Engine
             SDL.SDL_RenderClear(Internal.RendererHandle);
 
             // DRAW
-            _dummyTexture.Render(Internal.RendererHandle);
-            _text.Render(Internal.RendererHandle);
+            //_dummyTexture.Render(Internal.RendererHandle);
+            _textRenderer.RenderTextWithWidth("The backlash against Russian culture in Ukraine had been picking up steam since 2014, when Russia occupied the Donbas and Crimea. But Russia’s unprovoked invasion of Ukraine, together with the horrors committed by its troops, has sent it into overdrive. De-Russification has mostly been a bottom-up process or a matter of individual preference, as opposed to government policy. Millions of Ukrainians continue to speak Russian without suffering discrimination. ", 50, 50, 500, 0, 0, 0, 255);
             foreach (var window in Internal.Windows)
             {
                 window.Render();
