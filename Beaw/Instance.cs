@@ -118,7 +118,7 @@ namespace Engine
             _dummyTexture = new("Resources/madeline.png", Internal.RendererHandle);
             //_dummyTexture.Rectangle.w /= 5;
             //_dummyTexture.Rectangle.h /= 5;
-            _textRenderer = new(Internal.RendererHandle, "Resources/Fonts/arial.ttf", 26);
+            _textRenderer = new(Internal.RendererHandle, "Resources/Fonts/p5hatty.ttf", 26);
         }
         
         private void Update()

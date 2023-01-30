@@ -44,8 +44,37 @@ public class TextRenderer
         SDL.SDL_DestroyTexture(texture);
         SDL.SDL_FreeSurface(surface);
     }
+    
+    public void RenderTextWithWidth(string text, int x, int y, uint width, byte r, byte g, byte b, byte a)
+    {
+        var color = new SDL.SDL_Color
+        {
+            r = r,
+            g = g,
+            b = b,
+            a = a
+        };
 
-    public void RenderTextWithWidth(string text, int x, int y, int width, byte r, byte g, byte b, byte a)
+        IntPtr surface = SDL_ttf.TTF_RenderText_Blended_Wrapped(_font, text, color, width);
+        IntPtr texture = SDL2.SDL.SDL_CreateTextureFromSurface(_renderer, surface);
+        SDL2.SDL.SDL_Rect dst = new SDL2.SDL.SDL_Rect
+        {
+            x = x,
+            y = y,
+            w = (int)width,
+            h = 0,
+        };
+        SDL2.SDL.SDL_QueryTexture(texture, out uint format, out int access, out dst.w, out dst.h);
+        SDL2.SDL.SDL_RenderCopy(_renderer, texture, IntPtr.Zero, ref dst);
+        SDL2.SDL.SDL_FreeSurface(surface);
+        SDL2.SDL.SDL_DestroyTexture(texture);
+    }
+
+
+
+
+    [Obsolete("Use RenderTextWithWidth instead", true)]
+    public void RenderTextWithWidthOld(string text, int x, int y, int width, byte r, byte g, byte b, byte a)
     {
         var color = new SDL.SDL_Color
         {
