@@ -3,6 +3,7 @@ using SDL2;
 
 namespace Engine;
 
+[Obsolete("Use SpriteBatch instead.")]
 public class TextRenderer
 {
     private readonly IntPtr _font;
@@ -14,7 +15,8 @@ public class TextRenderer
         _font = SDL_ttf.TTF_OpenFont(fontPath, fontSize);
         if (_font == IntPtr.Zero) throw new Exception("Failed to load font: " + SDL_ttf.TTF_GetError());
     }
-
+    
+    [Obsolete("Use SpriteBatch.DrawText instead.")]
     public void RenderText(string text, int x, int y, byte r, byte g, byte b, byte a)
     {
         var color = new SDL.SDL_Color
@@ -45,6 +47,7 @@ public class TextRenderer
         SDL.SDL_FreeSurface(surface);
     }
     
+    [Obsolete("Use SpriteBatch.DrawTextWithWidth instead.")]
     public void RenderTextWithWidth(string text, int x, int y, uint width, byte r, byte g, byte b, byte a)
     {
         var color = new SDL.SDL_Color

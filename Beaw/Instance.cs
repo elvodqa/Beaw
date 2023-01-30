@@ -244,8 +244,8 @@ namespace Engine
             
             
             //_textRenderer.RenderTextWithWidth("The backlash against Russian culture in Ukraine had been picking up steam since 2014, when Russia occupied the Donbas and Crimea. But Russia’s unprovoked invasion of Ukraine, together with the horrors committed by its troops, has sent it into overdrive. De-Russification has mostly been a bottom-up process or a matter of individual preference, as opposed to government policy. Millions of Ukrainians continue to speak Russian without suffering discrimination. ", 50, 50, 500, 0, 0, 0, 255);
-            _textRenderer.RenderText("Expected: * ’ ' - , . ! ? [ ] { }", 50, 20, 0, 0, 0, 255);
-            _textRenderer.RenderTextWithWidth("Result: * ’ ' - , . ! ? [ ] { }", 50, 50, 500, 0, 0, 0, 255);
+            _spriteBatch.DrawText("Expected: * ’ ' - , . ! ? [ ] { }", 50, 20, 0, 0, 0, 255);
+            _spriteBatch.DrawTextWithWidth("Result: * ’ ' - , . ! ? [ ] { }", 50, 50, 500, 0, 0, 0, 255);
             foreach (var window in Internal.Windows)
             {
                 window.Render();
