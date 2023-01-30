@@ -59,6 +59,8 @@ namespace Engine
         private Texture2D _dummyTexture;
         private SpriteBatch _spriteBatch;
         private TextRenderer _textRenderer;
+        private int _rotation = 0;
+        private Input Input;
 
         public Instance(InstanceSettings instanceSettings)
         {
@@ -118,9 +120,10 @@ namespace Engine
             _clock = new();
             _spriteBatch = new(Internal.RendererHandle);
             _dummyTexture = new("Resources/madeline.png", Internal.RendererHandle);
-            //_dummyTexture.Rectangle.w /= 5;
-            //_dummyTexture.Rectangle.h /= 5;
+            
+            
             _textRenderer = new(Internal.RendererHandle, "Resources/Fonts/p5hatty.ttf", 26);
+            Input = new();
         }
         
         private void Update()
@@ -129,6 +132,12 @@ namespace Engine
             foreach (var window in Internal.Windows)
             {
                 window.Update(_clock);
+            }
+            Input.Update();
+
+            if (Input.IsKeyJustDown(SDL.SDL_Scancode.SDL_SCANCODE_A))
+            {
+                Console.WriteLine("A");
             }
         }
 
@@ -153,6 +162,10 @@ namespace Engine
                             i++;
                         }
                     }
+                }
+                if (e.type == SDL.SDL_EventType.SDL_KEYDOWN)
+                {
+                    Input.UpdateEvent(e);
                 }
                 // DEPRECTAED
                 if (e.type == SDL.SDL_EventType.SDL_WINDOWEVENT
@@ -240,7 +253,7 @@ namespace Engine
             
             
           
-            _spriteBatch.Draw(_dummyTexture, 100, 100, 200, 200, 1, 1, 30);
+            _spriteBatch.Draw(_dummyTexture, 100, 100, 200, 200, 1, 1, _rotation);
             
             
             //_textRenderer.RenderTextWithWidth("The backlash against Russian culture in Ukraine had been picking up steam since 2014, when Russia occupied the Donbas and Crimea. But Russia’s unprovoked invasion of Ukraine, together with the horrors committed by its troops, has sent it into overdrive. De-Russification has mostly been a bottom-up process or a matter of individual preference, as opposed to government policy. Millions of Ukrainians continue to speak Russian without suffering discrimination. ", 50, 50, 500, 0, 0, 0, 255);
