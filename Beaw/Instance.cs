@@ -56,7 +56,8 @@ namespace Engine
         private double _startTime = SDL.SDL_GetTicks();
         private double _currentTime = SDL.SDL_GetTicks();
         private Clock _clock;
-        private Texture _dummyTexture;
+        private Texture2D _dummyTexture;
+        private SpriteBatch _spriteBatch;
         private TextRenderer _textRenderer;
 
         public Instance(InstanceSettings instanceSettings)
@@ -115,6 +116,7 @@ namespace Engine
             }
 
             _clock = new();
+            _spriteBatch = new(Internal.RendererHandle);
             _dummyTexture = new("Resources/madeline.png", Internal.RendererHandle);
             //_dummyTexture.Rectangle.w /= 5;
             //_dummyTexture.Rectangle.h /= 5;
@@ -235,10 +237,15 @@ namespace Engine
         {
             SDL.SDL_SetRenderDrawColor(Internal.RendererHandle, 88, 85, 83, 255);
             SDL.SDL_RenderClear(Internal.RendererHandle);
-
-            // DRAW
-            //_dummyTexture.Render(Internal.RendererHandle);
-            _textRenderer.RenderTextWithWidth("The backlash against Russian culture in Ukraine had been picking up steam since 2014, when Russia occupied the Donbas and Crimea. But Russia’s unprovoked invasion of Ukraine, together with the horrors committed by its troops, has sent it into overdrive. De-Russification has mostly been a bottom-up process or a matter of individual preference, as opposed to government policy. Millions of Ukrainians continue to speak Russian without suffering discrimination. ", 50, 50, 500, 0, 0, 0, 255);
+            
+            
+          
+            _spriteBatch.Draw(_dummyTexture, 100, 100, 200, 200, 1, 1, 30);
+            
+            
+            //_textRenderer.RenderTextWithWidth("The backlash against Russian culture in Ukraine had been picking up steam since 2014, when Russia occupied the Donbas and Crimea. But Russia’s unprovoked invasion of Ukraine, together with the horrors committed by its troops, has sent it into overdrive. De-Russification has mostly been a bottom-up process or a matter of individual preference, as opposed to government policy. Millions of Ukrainians continue to speak Russian without suffering discrimination. ", 50, 50, 500, 0, 0, 0, 255);
+            _textRenderer.RenderText("Expected: * ’ ' - , . ! ? [ ] { }", 50, 20, 0, 0, 0, 255);
+            _textRenderer.RenderTextWithWidth("Result: * ’ ' - , . ! ? [ ] { }", 50, 50, 500, 0, 0, 0, 255);
             foreach (var window in Internal.Windows)
             {
                 window.Render();

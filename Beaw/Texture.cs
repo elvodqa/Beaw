@@ -3,6 +3,7 @@ using SDL2;
 
 namespace Engine
 {
+    [Obsolete("Use Texture2D with SpriteBatch instead.")]
     public class Texture : IRenderable, IUpdatable
     {
         public IntPtr TextureHandle;
