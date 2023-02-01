@@ -1,10 +1,10 @@
 
-local alex = Character("Alex", {}) -- new("name", {} = extra properties you may use later by calling
+local alex = Character("Alex", {}) -- Character("name", {} = extra properties you may use later by calling
 -- alex:get("property") or alex:set("property", value)
 
 alex:say("Hello World!") -- say("text") = prints text to the console
 alex:say("How are you?")
-callback = Choice("How are you?", {"Fine", "Not so good"}) -- new("text", {"choice1", "choice2", ...})
+callback = Choice("How are you?", {"Fine", "Not so good"}) -- Choice("text", {"choice1", "choice2", ...})
 if callback == "Fine" then        -- You can also do:
     alex:say("That's good!")      -- if callback == 1 then
 else                              --    alex.say("That's good!")

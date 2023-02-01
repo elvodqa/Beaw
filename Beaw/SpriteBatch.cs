@@ -3,6 +3,14 @@ using SDL2;
 
 namespace Engine;
 
+
+public enum Alignment
+{
+    Left,
+    Center,
+    Right
+}
+
 public class Texture2D
 {
     public IntPtr Texture { get; set; }
@@ -120,6 +128,50 @@ public class SpriteBatch
         SDL.SDL_FreeSurface(surface);
     }
     
+    
+    public void DrawText(string text, int x, int y, byte r, byte g, byte b, byte a, Alignment alignment)
+    {
+        var color = new SDL.SDL_Color
+        {
+            r = r,
+            g = g,
+            b = b,
+            a = a
+        };
+        
+        var surface = SDL_ttf.TTF_RenderUTF8_Blended(_font, text, color);
+        if (surface == IntPtr.Zero) throw new Exception("Failed to render text: " + SDL_ttf.TTF_GetError());
+        
+        var texture = SDL.SDL_CreateTextureFromSurface(_renderer, surface);
+        if (texture == IntPtr.Zero) throw new Exception("Failed to create texture from surface: " + SDL.SDL_GetError());
+        
+        var _surface = (SDL.SDL_Surface)(Marshal.PtrToStructure(surface, typeof(SDL.SDL_Surface)) ?? throw new InvalidOperationException());
+        var dstRect = new SDL.SDL_Rect
+        {
+            x = x,
+            y = y,
+            w = _surface.w,
+            h = _surface.h
+        };
+        
+        switch (alignment)
+        {
+            case Alignment.Left:
+                dstRect.x = x;
+                break;
+            case Alignment.Center:
+                dstRect.x = x - (dstRect.w / 2);
+                break;
+            case Alignment.Right:
+                dstRect.x = x - dstRect.w;
+                break;
+        }
+        
+        SDL.SDL_RenderCopy(_renderer, texture, IntPtr.Zero, ref dstRect);
+        SDL.SDL_DestroyTexture(texture);
+        SDL.SDL_FreeSurface(surface);
+    }
+    
     public void DrawTextWithWidth(string text, int x, int y, uint width, byte r, byte g, byte b, byte a)
     {
         var color = new SDL.SDL_Color
@@ -140,6 +192,46 @@ public class SpriteBatch
             h = 0,
         };
         SDL2.SDL.SDL_QueryTexture(texture, out uint format, out int access, out dst.w, out dst.h);
+        SDL2.SDL.SDL_RenderCopy(_renderer, texture, IntPtr.Zero, ref dst);
+        SDL2.SDL.SDL_FreeSurface(surface);
+        SDL2.SDL.SDL_DestroyTexture(texture);
+    }
+    
+    public void DrawTextWithWidth(string text, int x, int y, uint width, byte r, byte g, byte b, byte a, Alignment alignment)
+    {
+        var color = new SDL.SDL_Color
+        {
+            r = r,
+            g = g,
+            b = b,
+            a = a
+        };
+
+        IntPtr surface = SDL_ttf.TTF_RenderText_Blended_Wrapped(_font, text, color, width);
+        IntPtr texture = SDL2.SDL.SDL_CreateTextureFromSurface(_renderer, surface);
+        SDL2.SDL.SDL_Rect dst = new SDL2.SDL.SDL_Rect
+        {
+            x = x,
+            y = y,
+            w = (int)width,
+            h = 0,
+        };
+        SDL2.SDL.SDL_QueryTexture(texture, out uint format, out int access, out dst.w, out dst.h);
+        
+        // align text
+        switch (alignment)
+        {
+            case Alignment.Left:
+                dst.x = x;
+                break;
+            case Alignment.Center:
+                dst.x = x - dst.w / 2;
+                break;
+            case Alignment.Right:
+                dst.x = x - dst.w;
+                break;
+        }
+        
         SDL2.SDL.SDL_RenderCopy(_renderer, texture, IntPtr.Zero, ref dst);
         SDL2.SDL.SDL_FreeSurface(surface);
         SDL2.SDL.SDL_DestroyTexture(texture);

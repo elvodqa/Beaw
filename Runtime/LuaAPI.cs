@@ -15,6 +15,7 @@ public class LuaAPI
             @"
                     import ('Runtime')
                     window = {}
+                    game = {}
                     ");
     }
 

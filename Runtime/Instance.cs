@@ -5,6 +5,13 @@ using SDL2;
 
 namespace Runtime;
 
+internal enum InstanceState
+{
+    OnMenu,
+    OnPause,
+    OnGame
+}
+
 internal class Instance : IDisposable
 {
     private Clock _clock;
@@ -17,13 +24,18 @@ internal class Instance : IDisposable
     private double _startTime = SDL.SDL_GetTicks();
     private TextRenderer _textRenderer;
     private Input Input;
-
+    private InstanceState _instanceState = InstanceState.OnMenu;
+    public int WindowWidth, WindowHeight;
+    public string GameTitle;
+    
     public Instance(InstanceSettings instanceSettings)
     {
         InstanceSettings = instanceSettings;
     }
 
     public LuaAPI LuaApi { get; set; } = new();
+    
+    public Text TitleText { get; set; }
 
     public void Dispose()
     {
@@ -37,6 +49,8 @@ internal class Instance : IDisposable
         SDL_ttf.TTF_Init();
         _running = true;
         Load();
+        WindowWidth = (int)InstanceSettings.Size.X;
+        WindowHeight = (int)InstanceSettings.Size.Y;
         while (_running)
         {
             Update();
@@ -47,6 +61,7 @@ internal class Instance : IDisposable
 
     private void Load()
     {
+        #region Window 
         if (InstanceSettings.Size.X < 640)
         {
             Console.WriteLine("Given width is smaller than expected. It is set to 640.");
@@ -78,15 +93,21 @@ internal class Instance : IDisposable
 
         if (Internal.RendererHandle == nint.Zero)
             Console.WriteLine($"There was an issue creating the renderer. {SDL.SDL_GetError()}");
-
+        #endregion
+        
         _clock = new Clock();
         _dummyTexture = new Texture2D("Resources/madeline.png", Internal.RendererHandle);
-
+    
 
         _textRenderer = new TextRenderer(Internal.RendererHandle, "Resources/Fonts/p5hatty.ttf", 26);
         Input = new Input();
         Internal.SpriteBatch = new SpriteBatch(Internal.RendererHandle);
         Internal.SpriteBatch.FontSize = 26;
+        
+        TitleText = new(GameTitle, (int)(InstanceSettings.Size.X / 2), 50, "Resources/Fonts/p5hatty.ttf", 26, Internal.RendererHandle);
+        TitleText.FontSize = 40;
+        TitleText.Alignment = Alignment.Center;
+        TitleText.Color = new SDL.SDL_Color {r = 255, g = 255, b = 255, a = 255};
     }
 
     private void Update()
@@ -95,15 +116,24 @@ internal class Instance : IDisposable
         foreach (var window in Internal.Windows) window.Update(_clock);
         Input.Update();
 
-        if (Input.IsKeyJustDown(SDL.SDL_Scancode.SDL_SCANCODE_A)) Console.WriteLine("A");
-
-        _randomtext += Input.GetPressedChar();
+        switch (_instanceState)
+        {
+            case InstanceState.OnMenu:
+            {
+                break;
+            }
+            case InstanceState.OnGame:
+            {
+                break;
+            }
+        }
+        
     }
 
     private void HandleEvents()
     {
         SDL.SDL_Event e;
-        while (SDL.SDL_PollEvent(out e) == 1)
+        if (SDL.SDL_WaitEvent(out e) == 1)
         {
             // handle multiple windows
             if (e.type == SDL.SDL_EventType.SDL_WINDOWEVENT
@@ -120,16 +150,16 @@ internal class Instance : IDisposable
                     }
 
             if (e.type == SDL.SDL_EventType.SDL_KEYDOWN) Input.UpdateEvent(e);
-            // DEPRECTAED
+           
+            // if window resized 
             if (e.type == SDL.SDL_EventType.SDL_WINDOWEVENT
-                && e.window.windowEvent == SDL.SDL_WindowEventID.SDL_WINDOWEVENT_CLOSE)
-                foreach (var window in Internal.Windows)
-                    if (SDL.SDL_GetWindowID(window.Handle) == e.window.windowID)
-                    {
-                        SDL.SDL_DestroyWindow(window.Handle);
-                        Internal.Windows.Remove(window);
-                    }
-
+                && e.window.windowEvent == SDL.SDL_WindowEventID.SDL_WINDOWEVENT_RESIZED)
+            {
+                WindowWidth = e.window.data1;
+                WindowHeight = e.window.data2;
+                TitleText.X = WindowWidth / 2;
+            }
+            
             switch (e.type)
             {
                 case SDL.SDL_EventType.SDL_QUIT:
@@ -188,13 +218,22 @@ internal class Instance : IDisposable
         SDL.SDL_RenderClear(Internal.RendererHandle);
 
 
-        Internal.SpriteBatch.Draw(_dummyTexture, 100, 100, 200, 200, 1, 1, _rotation);
+        //Internal.SpriteBatch.Draw(_dummyTexture, 100, 100, 200, 200, 1, 1, _rotation);
 
 
-        //_textRenderer.RenderTextWithWidth("The backlash against Russian culture in Ukraine had been picking up steam since 2014, when Russia occupied the Donbas and Crimea. But Russia’s unprovoked invasion of Ukraine, together with the horrors committed by its troops, has sent it into overdrive. De-Russification has mostly been a bottom-up process or a matter of individual preference, as opposed to government policy. Millions of Ukrainians continue to speak Russian without suffering discrimination. ", 50, 50, 500, 0, 0, 0, 255);
-        Internal.SpriteBatch.DrawText("Expected: * ’ ' - , . ! ? [ ] { }", 50, 20, 0, 0, 0, 255);
-        Internal.SpriteBatch.DrawTextWithWidth("Result: * ’ ' - , . ! ? [ ] { }", 50, 50, 500, 0, 0, 0, 255);
-        Internal.SpriteBatch.DrawText("_randomtext", 0, 70, 255, 255, 255, 255);
+        switch (_instanceState)
+        {
+            case InstanceState.OnMenu:
+            {
+                TitleText.Draw();
+                break;
+            }
+            case InstanceState.OnGame:
+            {
+                break;
+            }
+        }
+        
         foreach (var window in Internal.Windows) window.Render();
 
 
