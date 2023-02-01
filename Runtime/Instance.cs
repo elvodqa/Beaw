@@ -82,8 +82,9 @@ internal class Instance : IDisposable
             (int)InstanceSettings.Size.Y,
             SDL.SDL_WindowFlags.SDL_WINDOW_ALLOW_HIGHDPI | SDL.SDL_WindowFlags.SDL_WINDOW_RESIZABLE
         );
-
-        if (Internal.WindowHandle == nint.Zero)
+        
+        // nint.Zero
+        if (Internal.WindowHandle == IntPtr.Zero)
             Console.WriteLine($"There was an issue creating the window. {SDL.SDL_GetError()}");
 
         SDL.SDL_SetWindowMinimumSize(Internal.WindowHandle, 640, 480);
@@ -91,7 +92,7 @@ internal class Instance : IDisposable
         Internal.RendererHandle =
             SDL.SDL_CreateRenderer(Internal.WindowHandle, -1, SDL.SDL_RendererFlags.SDL_RENDERER_ACCELERATED);
 
-        if (Internal.RendererHandle == nint.Zero)
+        if (Internal.RendererHandle == IntPtr.Zero)
             Console.WriteLine($"There was an issue creating the renderer. {SDL.SDL_GetError()}");
         #endregion
         
