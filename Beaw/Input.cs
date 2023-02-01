@@ -65,4 +65,28 @@ public class Input
         SDL.SDL_GetMouseState(out int x, out int y);
         return (x, y);
     }
+    
+    public char GetPressedChar()
+    {
+        //var keyboardState = SDL.SDL_GetKeyboardState(out int numKeys);
+        int numKeys;
+        IntPtr keyboardState = SDL.SDL_GetKeyboardState(out numKeys);
+        byte[] keys = new byte[numKeys];
+        Marshal.Copy(keyboardState, keys, 0, numKeys);
+
+        for (int i = 0; i < numKeys; i++)
+        {
+            if (keys[i] == 1)
+            {
+                SDL.SDL_Keycode key = SDL.SDL_GetKeyFromScancode((SDL.SDL_Scancode)i);
+                char c = (char)key;
+                if (char.IsLetterOrDigit(c))
+                {
+                    return c;
+                }
+            }
+        }
+
+        return '\0';
+    }
 }

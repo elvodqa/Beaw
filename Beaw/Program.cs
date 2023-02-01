@@ -5,6 +5,7 @@ public class Program
 {
     public static void Main(string[] args)
     {
+        /*
         InstanceSettings instanceSettings = new InstanceSettings()
         {
             Size = new(1000, 700),
@@ -15,5 +16,6 @@ public class Program
         {
             instance.Run();
         }
+        */
     }
 }

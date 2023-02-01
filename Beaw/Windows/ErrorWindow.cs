@@ -20,7 +20,6 @@ public class ErrorWindow : Window
         SDL.SDL_SetRenderDrawColor(Renderer, 200, 0, 0, 255);
         SDL.SDL_RenderClear(Renderer);
         
-        //draw
         
         SDL.SDL_RenderPresent(Renderer);
     }
