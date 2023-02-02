@@ -1,5 +1,6 @@
 ﻿using System.Numerics;
 using Engine;
+using Engine.UI;
 using Engine.Windows;
 using SDL2;
 
@@ -12,29 +13,34 @@ internal enum InstanceState
     OnGame
 }
 
-internal class Instance : IDisposable
+public class Instance : IDisposable
 {
+    private readonly int _rotation = 0;
     private Clock _clock;
     private double _currentTime = SDL.SDL_GetTicks();
     private Texture2D _dummyTexture;
-    public InstanceSettings InstanceSettings;
+    private readonly InstanceState _instanceState = InstanceState.OnMenu;
     private string _randomtext = "";
-    private readonly int _rotation = 0;
     private bool _running;
     private double _startTime = SDL.SDL_GetTicks();
     private TextRenderer _textRenderer;
-    private Input Input;
-    private InstanceState _instanceState = InstanceState.OnMenu;
-    public int WindowWidth, WindowHeight;
     public string GameTitle;
-    
+    public Input Input;
+    private Layer _menuLayer;
+    private Button _startButton;
+    private Button _loadButton;
+    private Button _optionsButton;
+    private Button _aboutButton;
+    private Button _quitButton;
+    public InstanceSettings InstanceSettings;
+    public int WindowWidth, WindowHeight;
+
     public Instance(InstanceSettings instanceSettings)
     {
         InstanceSettings = instanceSettings;
     }
 
     public LuaAPI LuaApi { get; set; } = new();
-    
     public Text TitleText { get; set; }
 
     public void Dispose()
@@ -61,7 +67,8 @@ internal class Instance : IDisposable
 
     private void Load()
     {
-        #region Window 
+        #region Window
+
         if (InstanceSettings.Size.X < 640)
         {
             Console.WriteLine("Given width is smaller than expected. It is set to 640.");
@@ -82,9 +89,11 @@ internal class Instance : IDisposable
             (int)InstanceSettings.Size.Y,
             SDL.SDL_WindowFlags.SDL_WINDOW_ALLOW_HIGHDPI | SDL.SDL_WindowFlags.SDL_WINDOW_RESIZABLE
         );
-        
-        // nint.Zero
-        if (Internal.WindowHandle == IntPtr.Zero)
+      
+        SDL.SDL_GL_SetSwapInterval(1);
+
+    // nint.Zero
+         if (Internal.WindowHandle == nint.Zero)
             Console.WriteLine($"There was an issue creating the window. {SDL.SDL_GetError()}");
 
         SDL.SDL_SetWindowMinimumSize(Internal.WindowHandle, 640, 480);
@@ -92,35 +101,52 @@ internal class Instance : IDisposable
         Internal.RendererHandle =
             SDL.SDL_CreateRenderer(Internal.WindowHandle, -1, SDL.SDL_RendererFlags.SDL_RENDERER_ACCELERATED);
 
-        if (Internal.RendererHandle == IntPtr.Zero)
+        if (Internal.RendererHandle == nint.Zero)
             Console.WriteLine($"There was an issue creating the renderer. {SDL.SDL_GetError()}");
+
         #endregion
-        
+
         _clock = new Clock();
         _dummyTexture = new Texture2D("Resources/madeline.png", Internal.RendererHandle);
-    
+
 
         _textRenderer = new TextRenderer(Internal.RendererHandle, "Resources/Fonts/p5hatty.ttf", 26);
         Input = new Input();
         Internal.SpriteBatch = new SpriteBatch(Internal.RendererHandle);
         Internal.SpriteBatch.FontSize = 26;
-        
-        TitleText = new(GameTitle, (int)(InstanceSettings.Size.X / 2), 50, "Resources/Fonts/p5hatty.ttf", 26, Internal.RendererHandle);
+
+        TitleText = new Text(GameTitle, 10, (int)(InstanceSettings.Size.Y- 360), "Resources/Fonts/p5hatty.ttf", 26,
+            Internal.RendererHandle);
         TitleText.FontSize = 40;
-        TitleText.Alignment = Alignment.Center;
-        TitleText.Color = new SDL.SDL_Color {r = 255, g = 255, b = 255, a = 255};
+        TitleText.Alignment = Alignment.Left;
+        TitleText.Color = new SDL.SDL_Color { r = 255, g = 255, b = 255, a = 255 };
+
+        _menuLayer = new(Internal.RendererHandle, this);
+        _startButton = new("Start", 10, (int)(InstanceSettings.Size.Y- 300), 100, 50, _menuLayer);
+        _loadButton = new("Load", 10, (int)(InstanceSettings.Size.Y- 240), 100, 50, _menuLayer);
+        _optionsButton = new("Options", 10, (int)(InstanceSettings.Size.Y- 180), 100, 50, _menuLayer);
+        _aboutButton = new("About", 10, (int)(InstanceSettings.Size.Y- 120), 100, 50, _menuLayer);
+        _quitButton = new("Quit", 10, (int)(InstanceSettings.Size.Y- 60), 100, 50, _menuLayer);
+        
+        
+        _quitButton.Pressed += (sender, args) =>
+        {
+            _running = false;
+            SDL.SDL_Quit();
+        };
     }
 
     private void Update()
     {
         _clock.Update();
         foreach (var window in Internal.Windows) window.Update(_clock);
-        Input.Update();
+        
 
         switch (_instanceState)
         {
             case InstanceState.OnMenu:
             {
+                _menuLayer.Update(_clock);
                 break;
             }
             case InstanceState.OnGame:
@@ -128,7 +154,7 @@ internal class Instance : IDisposable
                 break;
             }
         }
-        
+        Input.Update();
     }
 
     private void HandleEvents()
@@ -150,17 +176,22 @@ internal class Instance : IDisposable
                         i++;
                     }
 
-            if (e.type == SDL.SDL_EventType.SDL_KEYDOWN) Input.UpdateEvent(e);
-           
+            
+            Input.UpdateEvent(e);
             // if window resized 
             if (e.type == SDL.SDL_EventType.SDL_WINDOWEVENT
                 && e.window.windowEvent == SDL.SDL_WindowEventID.SDL_WINDOWEVENT_RESIZED)
             {
                 WindowWidth = e.window.data1;
                 WindowHeight = e.window.data2;
-                TitleText.X = WindowWidth / 2;
+                TitleText.Y = (WindowHeight - 360);
+                _startButton.Y = (WindowHeight - 300);
+                _loadButton.Y = (WindowHeight - 240);
+                _optionsButton.Y = (WindowHeight - 180);
+                _aboutButton.Y = (WindowHeight - 120);
+                _quitButton.Y = (WindowHeight - 60);
             }
-            
+
             switch (e.type)
             {
                 case SDL.SDL_EventType.SDL_QUIT:
@@ -227,6 +258,7 @@ internal class Instance : IDisposable
             case InstanceState.OnMenu:
             {
                 TitleText.Draw();
+                _menuLayer.Render(Internal.RendererHandle);
                 break;
             }
             case InstanceState.OnGame:
@@ -234,7 +266,7 @@ internal class Instance : IDisposable
                 break;
             }
         }
-        
+
         foreach (var window in Internal.Windows) window.Render();
 
 

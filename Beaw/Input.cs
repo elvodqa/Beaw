@@ -6,18 +6,21 @@ namespace Engine;
 public class Input
 {
     private bool[] _keyStates;
-    private bool[] _mouseStates;
     private bool[] _keyDownThisFrame;
+    private bool[] _mouseStates;
+    private bool[] _mouseDownThisFrame;
 
     public Input()
     {
         _keyStates = new bool[(int)SDL.SDL_Scancode.SDL_NUM_SCANCODES];
         _mouseStates = new bool[3];
+        _mouseDownThisFrame = new bool[3];
         _keyDownThisFrame = new bool[(int)SDL.SDL_Scancode.SDL_NUM_SCANCODES];
     }
 
     public void Update()
     {
+        Array.Clear(_mouseDownThisFrame, 0, _mouseDownThisFrame.Length);
         Array.Clear(_keyDownThisFrame, 0, _keyDownThisFrame.Length);
         var keyboardState = SDL.SDL_GetKeyboardState(out int numKeys);
         byte[] keys = new byte[numKeys];
@@ -35,14 +38,27 @@ public class Input
 
     public void UpdateEvent(SDL.SDL_Event e)
     {
-        //SDL.SDL_Event sdlEvent;
-        //while (SDL.SDL_PollEvent(out sdlEvent) != 0)
-        //{
-            //if (sdlEvent.type == SDL.SDL_EventType.SDL_KEYDOWN)
-            //{
-        _keyDownThisFrame[(int)e.key.keysym.scancode] = true;
-            //}
-        //}
+        if (e.type == SDL.SDL_EventType.SDL_KEYDOWN)
+        {
+            _keyDownThisFrame[(int)e.key.keysym.scancode] = true;
+        }
+        if (e.type == SDL.SDL_EventType.SDL_MOUSEBUTTONDOWN)
+        {
+            Console.WriteLine("[Mouse Down]");
+            if (e.button.button == SDL.SDL_BUTTON_LEFT)
+            {
+                _mouseDownThisFrame[0] = true;
+            }
+            if (e.button.button == SDL.SDL_BUTTON_MIDDLE)
+            {
+                _mouseDownThisFrame[1] = true;
+            }
+            if (e.button.button == SDL.SDL_BUTTON_RIGHT)
+            {
+                _mouseDownThisFrame[2] = true;
+            }
+        }
+    
     }
 
     public bool IsKeyDown(SDL.SDL_Scancode scancode)
@@ -55,9 +71,15 @@ public class Input
         return _keyDownThisFrame[(int)scancode];
     }
 
-    public bool IsMouseButtonDown(int button)
+    public bool IsMouseDown(int button)
     {
         return _mouseStates[button];
+    }
+    
+    
+    public bool IsMouseJustDown(int button)
+    {
+        return _mouseDownThisFrame[button];
     }
 
     public (int x, int y) GetMousePosition()

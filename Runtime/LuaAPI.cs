@@ -30,6 +30,4 @@ public class LuaAPI
         LoadScript(ScriptDirectory + "init.lua");
         LoadScript(ScriptDirectory + "script.lua");
     }
-    
-    
 }

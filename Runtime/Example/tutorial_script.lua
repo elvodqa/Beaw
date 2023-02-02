@@ -1,19 +1,17 @@
-
 local alex = Character("Alex", {}) -- Character("name", {} = extra properties you may use later by calling
 -- alex:get("property") or alex:set("property", value)
 
 alex:say("Hello World!") -- say("text") = prints text to the console
 alex:say("How are you?")
-callback = Choice("How are you?", {"Fine", "Not so good"}) -- Choice("text", {"choice1", "choice2", ...})
-if callback == "Fine" then        -- You can also do:
-    alex:say("That's good!")      -- if callback == 1 then
-else                              --    alex.say("That's good!")
-    alex:say("That's bad!")       -- elseif callback == 2 then
-end                              --    alex.say("That's bad!")
-                                  -- end
+callback = Choice("How are you?", { "Fine", "Not so good" }) -- Choice("text", {"choice1", "choice2", ...})
+if callback == "Fine" then
+    alex:say("That's good!")
+else
+    alex:say("That's bad!")
+end
 
 alex.say("So where do you want to go?")
-callback = Choice("So where do you want to go?", {"Home", "School", "Work"})
+callback = Choice("So where do you want to go?", { "Home", "School", "Work" })
 if callback == "Home" then
     alex:say("Okay, let's go home!")
     goto home_scene
@@ -23,13 +21,13 @@ elseif callback == "School" then
 elseif callback == "Work" then
     alex:say("Okay, let's go to work!")
     goto work_scene
-end 
+end
 
-::home_scene::
+:: home_scene ::
 alex:say("We're home!")
 
-::school_scene::
+:: school_scene ::
 alex:say("We're at school!")
 
-::work_scene::
+:: work_scene ::
 alex:say("We're at work!")

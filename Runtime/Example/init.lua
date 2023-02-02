@@ -7,4 +7,4 @@ window.width = 800
 window.height = 600
 window.title = "My Game"
 
-game.title = "Some Random Adventure Game"
+game.title = "This is a game title"
