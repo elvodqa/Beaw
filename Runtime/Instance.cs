@@ -34,6 +34,7 @@ public class Instance : IDisposable
     private Button _quitButton;
     public InstanceSettings InstanceSettings;
     public int WindowWidth, WindowHeight;
+    private Thread _thread;
 
     public Instance(InstanceSettings instanceSettings)
     {
@@ -48,6 +49,7 @@ public class Instance : IDisposable
         SDL.SDL_DestroyWindow(Internal.WindowHandle);
         SDL.SDL_DestroyRenderer(Internal.RendererHandle);
         SDL.SDL_Quit();
+        _thread.Abort();
     }
 
     public void Run()
@@ -120,6 +122,7 @@ public class Instance : IDisposable
         TitleText.FontSize = 40;
         TitleText.Alignment = Alignment.Left;
         TitleText.Color = new SDL.SDL_Color { r = 255, g = 255, b = 255, a = 255 };
+        //TitleText.PercentageVisible = 100;
 
         _menuLayer = new(Internal.RendererHandle, this);
         _startButton = new("Start", 10, (int)(InstanceSettings.Size.Y- 300), 100, 50, _menuLayer);
@@ -134,6 +137,9 @@ public class Instance : IDisposable
             _running = false;
             SDL.SDL_Quit();
         };
+
+        _thread = new Thread(LuaApi.LoadMainScript);
+        _thread.Start();
     }
 
     private void Update()

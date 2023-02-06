@@ -1,7 +1,9 @@
-﻿---
---- Created by Emir.
---- DateTime: 2/1/2023 4:29 PM
----
-
-local emir = Character("Emir")
-emir:say("Hello World!")
+﻿
+function foo()
+    local foo = Character("Foo")
+    foo:say("Hello World!")
+    while true do
+        coroutine.yield()
+        foo:say("How are you?")
+    end
+end

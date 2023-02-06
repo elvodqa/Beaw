@@ -4,7 +4,7 @@ local alex = Character("Alex", {}) -- Character("name", {} = extra properties yo
 alex:say("Hello World!") -- say("text") = prints text to the console
 alex:say("How are you?")
 callback = Choice("How are you?", { "Fine", "Not so good" }) -- Choice("text", {"choice1", "choice2", ...})
-if callback == "Fine" then
+if callback == 1 then
     alex:say("That's good!")
 else
     alex:say("That's bad!")
@@ -12,13 +12,13 @@ end
 
 alex.say("So where do you want to go?")
 callback = Choice("So where do you want to go?", { "Home", "School", "Work" })
-if callback == "Home" then
+if callback == 1 then
     alex:say("Okay, let's go home!")
     goto home_scene
-elseif callback == "School" then
+elseif callback == 2 then
     alex:say("Okay, let's go to school!")
     goto school_scene
-elseif callback == "Work" then
+elseif callback == 3 then
     alex:say("Okay, let's go to work!")
     goto work_scene
 end

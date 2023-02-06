@@ -1,4 +1,5 @@
-﻿using NLua;
+﻿using KeraLua;
+using Lua = NLua.Lua;
 
 namespace Runtime;
 
@@ -21,13 +22,17 @@ public class LuaAPI
 
     public void LoadScript(string fileName)
     {
-        Lua.DoFile(fileName);
+        Lua.DoFile(ScriptDirectory + fileName);
     }
 
     public void LoadInitScript()
     {
         LoadApiFunctions();
-        LoadScript(ScriptDirectory + "init.lua");
-        LoadScript(ScriptDirectory + "script.lua");
+        LoadScript("init.lua");
+    }
+    
+    public void LoadMainScript()
+    {
+        LoadScript("script.lua");
     }
 }

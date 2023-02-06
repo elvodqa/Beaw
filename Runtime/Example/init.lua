@@ -7,4 +7,9 @@ window.width = 800
 window.height = 600
 window.title = "My Game"
 
+-- optinal
+window.icon = "icon.png"
+window.resizable = true
+--
+
 game.title = "This is a game title"
